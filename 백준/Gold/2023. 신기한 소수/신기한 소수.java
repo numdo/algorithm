@@ -3,14 +3,12 @@ import java.io.*;
 import java.util.*;
 public class Main {
 	static int N;
-	static List<Integer> list = new ArrayList<>();
 	static StringBuilder sb = new StringBuilder();
 	public static void main(String[] args) throws Exception{
 		// TODO Auto-generated method stub
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		
 		N = Integer.parseInt(br.readLine());
-//		for(int i=0;i<N;i++)
 		// 첫번째 인자가 소수인 수만 구함
 		findPrime(2,1);
 		findPrime(3,1);
@@ -36,7 +34,6 @@ public class Main {
 	}
 	// 제곱근까지의 수까지만 소수를 구해도 소수를 판별 할 수 있음
 	public static boolean checkPrime(int num) {
-		if(num<2) return false;
 		for(int i=2;i<=Math.sqrt(num);i++) {
 			if(num%i == 0) return false;
 		}
