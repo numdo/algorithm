@@ -78,22 +78,22 @@ public class Main {
 			}
 		}
 	}
-	public static int[] goUpDown(int x,int y,int dir) {
-		while(true) {
-			int nx = x + dx[dir];
-			int ny = y + dy[dir];
-			
-			// 범위를 벗어나거나 방문한 적 있거나 벽인 경우 종료
-			if(!isMap(nx, ny) || visited[nx][ny] || map[nx][ny] != 0) {
-				return new int[] {x, y};  // 이전 위치로 돌아감
-			}
-			
-			// 새로운 위치 방문 처리
-			x = nx;
-			y = ny;
-			visited[x][y] = true;
-		}
-	}
+//	public static int[] goUpDown(int x,int y,int dir) {
+//		while(true) {
+//			int nx = x + dx[dir];
+//			int ny = y + dy[dir];
+//			
+//			// 범위를 벗어나거나 방문한 적 있거나 벽인 경우 종료
+//			if(!isMap(nx, ny) || visited[nx][ny] || map[nx][ny] != 0) {
+//				return new int[] {x, y};  // 이전 위치로 돌아감
+//			}
+//			
+//			// 새로운 위치 방문 처리
+//			x = nx;
+//			y = ny;
+//			visited[x][y] = true;
+//		}
+//	}
 	public static boolean isMap(int x,int y) {
 		return x>=0 && x<N && y>=0 && y<M;
 	}
@@ -111,7 +111,7 @@ public class Main {
 		@Override
 		public int compareTo(Point o) {
 			// TODO Auto-generated method stub
-            return (left+right) <= (o.left + o.right) ? 1 : -1;
+		    return (o.left + o.right) - (this.left + this.right);
 		}
 		
 	}
