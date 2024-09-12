@@ -19,16 +19,6 @@ class Solution {
                 list.add(color++,count);
             }
         }
-//         for(int i=0;i<land.length;i++){
-//             for(int j=0;j<land[0].length;j++){
-//                 if(land[i][j] >0){
-//                     land[i][j] = list.get(land[i][j]);
-//                 }
-//                 System.out.print(land[i][j] + " ");
-
-//             }
-//             System.out.println();
-        // }
         visited = new boolean[land.length][size];
         for(int i=0;i<size;i++){
             Set<Integer> set = new HashSet<>();
@@ -73,9 +63,7 @@ class Solution {
             return;
         }
         
-        dfs(x+1,y,set,visited,land);    
-        
-        
+        dfs(x+1,y,set,visited,land);      
     }
     public static boolean isMap(int x,int y,int[][] land){
         return x>=0 && x<land.length && y>=0 && y<land[0].length;
