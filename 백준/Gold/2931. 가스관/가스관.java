@@ -127,9 +127,9 @@ public class Main {
 						}
 
 					} else {
-						if (!(cur.x == start.x && cur.y == start.y) && !(cur.x == end.x && cur.y == end.y)) {
-						    answer = new Gas(nx, ny, new int[] {0, 0, 0, 0});
-						    return;
+						if(!cur.equals(start)) {
+							answer = new Gas(nx,ny,new int[] {0,0,0,0});
+							return;
 						}
 					}
 				}
