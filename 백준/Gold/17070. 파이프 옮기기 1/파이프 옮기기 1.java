@@ -4,15 +4,13 @@ import java.util.*;
 public class Main {
     static int N;
     static int[][] map;
-    static int[] dx = { 0, 1, 1 }; // 가로, 세로, 대각선
-    static int[] dy = { 1, 0, 1 };
-    static int count = 0; // 가능한 경로의 수
+    static int[][][] dp; // dp[x][y][0]: 가로, dp[x][y][1]: 세로, dp[x][y][2]: 대각선
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         N = Integer.parseInt(br.readLine());
         map = new int[N][N];
+        dp = new int[N][N][3]; // 각 위치에서 파이프가 가로, 세로, 대각선으로 오는 경우의 수
 
         for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
@@ -21,44 +19,36 @@ public class Main {
             }
         }
 
-        // 초기 상태는 가로로 (0, 0)에서 (0, 1)로 가로 놓인 상태에서 시작
-        dfs(0, 1, 0);
-        System.out.println(count);
-    }
+        // 초기 상태 설정 (파이프는 처음 가로로 놓여 있음)
+        dp[0][1][0] = 1;
 
-    // DFS 메서드
-    public static void dfs(int x, int y, int type) {
-        // 마지막 칸에 도달했을 때 경로 하나 완성
-        if (x == N - 1 && y == N - 1) {
-            count++;
-            return;
-        }
+        for (int i = 0; i < N; i++) {
+            for (int j = 1; j < N; j++) {
+                if (map[i][j] == 1) continue; // 벽이 있으면 이동 불가
 
-        // 가로, 세로, 대각선 상태에 따른 이동
-        for (int dir = 0; dir < 3; dir++) {
-            int nx = x + dx[dir];
-            int ny = y + dy[dir];
-
-            // 가로에서 세로로는 못 이동, 세로에서 가로로는 못 이동
-            if ((type == 0 && dir == 1) || (type == 1 && dir == 0)) {
-                continue;
-            }
-
-            // 범위와 벽 체크
-            if (isInMap(nx, ny) && map[nx][ny] == 0) {
-                // 대각선으로 이동할 때는 추가적으로 체크
-                if (dir == 2 && (map[x + 1][y] == 1 || map[x][y + 1] == 1)) {
-                    continue;
+                // 가로 상태에서 갈 수 있는 경우
+                if (j - 1 >= 0) {
+                    dp[i][j][0] += dp[i][j - 1][0]; // 이전 위치가 가로
+                    dp[i][j][0] += dp[i][j - 1][2]; // 이전 위치가 대각선
                 }
 
-                // 다음 상태로 DFS 재귀 호출
-                dfs(nx, ny, dir);
+                // 세로 상태에서 갈 수 있는 경우
+                if (i - 1 >= 0) {
+                    dp[i][j][1] += dp[i - 1][j][1]; // 이전 위치가 세로
+                    dp[i][j][1] += dp[i - 1][j][2]; // 이전 위치가 대각선
+                }
+
+                // 대각선 상태에서 갈 수 있는 경우
+                if (i - 1 >= 0 && j - 1 >= 0 && map[i - 1][j] == 0 && map[i][j - 1] == 0) {
+                    dp[i][j][2] += dp[i - 1][j - 1][0]; // 이전 위치가 가로
+                    dp[i][j][2] += dp[i - 1][j - 1][1]; // 이전 위치가 세로
+                    dp[i][j][2] += dp[i - 1][j - 1][2]; // 이전 위치가 대각선
+                }
             }
         }
-    }
 
-    // 범위 체크 메서드
-    public static boolean isInMap(int x, int y) {
-        return x >= 0 && x < N && y >= 0 && y < N;
+        // 최종 도착지에서 가로, 세로, 대각선 모두에서 도착할 수 있는 경우의 수 합산
+        int result = dp[N - 1][N - 1][0] + dp[N - 1][N - 1][1] + dp[N - 1][N - 1][2];
+        System.out.println(result);
     }
 }
