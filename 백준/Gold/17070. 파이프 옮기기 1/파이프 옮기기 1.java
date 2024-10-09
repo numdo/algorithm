@@ -2,69 +2,63 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-	static int N;
-	static int[][] map;
-	static int[] dx = { 0, 1, 1 };
-	static int[] dy = { 1, 0, 1 };
+    static int N;
+    static int[][] map;
+    static int[] dx = { 0, 1, 1 }; // 가로, 세로, 대각선
+    static int[] dy = { 1, 0, 1 };
+    static int count = 0; // 가능한 경로의 수
 
-	static class Pipe {
-		int x, y, type;
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-		public Pipe(int x, int y, int type) {
-			this.x = x;
-			this.y = y;
-			this.type = type;
-		}
+        N = Integer.parseInt(br.readLine());
+        map = new int[N][N];
 
-	}
+        for (int i = 0; i < N; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for (int j = 0; j < N; j++) {
+                map[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
 
-	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        // 초기 상태는 가로로 (0, 0)에서 (0, 1)로 가로 놓인 상태에서 시작
+        dfs(0, 1, 0);
+        System.out.println(count);
+    }
 
-		N = Integer.parseInt(br.readLine());
-		map = new int[N][N];
+    // DFS 메서드
+    public static void dfs(int x, int y, int type) {
+        // 마지막 칸에 도달했을 때 경로 하나 완성
+        if (x == N - 1 && y == N - 1) {
+            count++;
+            return;
+        }
 
-		for (int i = 0; i < N; i++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < N; j++) {
-				map[i][j] = Integer.parseInt(st.nextToken());
-			}
-		}
-		System.out.println(bfs(new Pipe(0, 1, 0)));
-	}
+        // 가로, 세로, 대각선 상태에 따른 이동
+        for (int dir = 0; dir < 3; dir++) {
+            int nx = x + dx[dir];
+            int ny = y + dy[dir];
 
-	public static int bfs(Pipe p) {
-		Queue<Pipe> q = new LinkedList<>();
-		q.add(p);
-		int count = 0;
-		while (!q.isEmpty()) {
-			Pipe cur = q.poll();
-			int cnt = 0;
-			if (cur.x == N - 1 && cur.y == N - 1) {
-				count++;
-			}
-			for (int dir = 0; dir < 3; dir++) {
-				int nx = cur.x + dx[dir];
-				int ny = cur.y + dy[dir];
-				if (isMap(nx, ny) && map[nx][ny] != 1) {
-					cnt++;
-					if (dir == 0 && cur.type != 1) {
-						q.add(new Pipe(nx, ny, 0));
-					} else if (dir == 1 && cur.type != 0) {
-						q.add(new Pipe(nx, ny, 1));
-					} else if (dir == 2 && cnt == 3) {
-						q.add(new Pipe(nx, ny, 2));
-					}
-				}
-			}
+            // 가로에서 세로로는 못 이동, 세로에서 가로로는 못 이동
+            if ((type == 0 && dir == 1) || (type == 1 && dir == 0)) {
+                continue;
+            }
 
-		}
-		
-		return count;
-	}
+            // 범위와 벽 체크
+            if (isInMap(nx, ny) && map[nx][ny] == 0) {
+                // 대각선으로 이동할 때는 추가적으로 체크
+                if (dir == 2 && (map[x + 1][y] == 1 || map[x][y + 1] == 1)) {
+                    continue;
+                }
 
-	public static boolean isMap(int x, int y) {
-		return x >= 0 && x < N && y >= 0 && y < N;
-	}
+                // 다음 상태로 DFS 재귀 호출
+                dfs(nx, ny, dir);
+            }
+        }
+    }
+
+    // 범위 체크 메서드
+    public static boolean isInMap(int x, int y) {
+        return x >= 0 && x < N && y >= 0 && y < N;
+    }
 }
