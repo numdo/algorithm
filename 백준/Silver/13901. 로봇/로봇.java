@@ -1,58 +1,73 @@
+import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int[] dr = {-1, 1, 0, 0}; // 상, 하, 좌, 우
-    static int[] dc = {0, 0, -1, 1}; 
-    static int R, C;
-    static boolean[][] visited;
-    static int[][] room;
+	static int N,M,K;
+	static int[][] map;
+	static int startX,startY;
+	static int[] dx = {-1,1,0,0};
+	static int[] dy = {0,0,-1,1};
+	static int[] dir;
+	static int answerX,answerY;
+	public static void main(String[] args) throws Exception{
+		// TODO Auto-generated method stub
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
+		K = Integer.parseInt(br.readLine());
+		dir = new int[4];
+		map = new int[N][M];
+		for(int i=0;i<K;i++) {
+			st = new StringTokenizer(br.readLine());
+			int x = Integer.parseInt(st.nextToken());
+			int y = Integer.parseInt(st.nextToken());
+			map[x][y] = -1;
+		}
+		st = new StringTokenizer(br.readLine());
+		startX = Integer.parseInt(st.nextToken());
+		startY = Integer.parseInt(st.nextToken());
+		map[startX][startY] = 1;
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        R = sc.nextInt();
-        C = sc.nextInt();
-        room = new int[R][C];
-        visited = new boolean[R][C];
+		st = new StringTokenizer(br.readLine());
+		for(int i=0;i<4;i++) {
+			dir[i] = Integer.parseInt(st.nextToken()) - 1;
+		}
+		answerX = startX;
+		answerY = startY;
+		bfs();
+		
+		System.out.println(answerX + " " + answerY);
+	}
+	public static void bfs() {
+		Queue<int[]> q = new LinkedList<>();
+		q.add(new int[] {startX,startY,0});
 
-        int k = sc.nextInt();
-        for (int i = 0; i < k; i++) {
-            int br = sc.nextInt();
-            int bc = sc.nextInt();
-            room[br][bc] = 1; // 장애물 위치 설정
-        }
-
-        int sr = sc.nextInt();
-        int scPos = sc.nextInt();
-        int[] directions = new int[4];
-        for (int i = 0; i < 4; i++) {
-            directions[i] = sc.nextInt() - 1; // 1~4를 0~3으로 맞춤
-        }
-
-        // 시작 위치 방문 표시
-        visited[sr][scPos] = true;
-
-        // 시뮬레이션 시작
-        int r = sr, c = scPos, dirIdx = 0;
-        while (true) {
-            boolean moved = false;
-            for (int i = 0; i < 4; i++) {
-                int dir = directions[(dirIdx + i) % 4];
-                int nr = r + dr[dir];
-                int nc = c + dc[dir];
-
-                if (nr >= 0 && nr < R && nc >= 0 && nc < C && room[nr][nc] == 0 && !visited[nr][nc]) {
-                    visited[nr][nc] = true;
-                    r = nr;
-                    c = nc;
-                    dirIdx = (dirIdx + i) % 4; // 새로운 방향 인덱스 갱신
-                    moved = true;
-                    break;
-                }
-            }
-
-            if (!moved) break; // 이동하지 못하면 종료
-        }
-
-        System.out.println(r + " " + c); // 마지막 위치 출력
-    }
+		while(!q.isEmpty()) {
+			int[] cur = q.poll();
+			for(int i=0;i<4;i++) {
+				int d = (cur[2] +i)%4;
+				int nx = cur[0] + dx[dir[d]];
+				int ny = cur[1] + dy[dir[d]];
+				if(isIn(nx,ny) && map[nx][ny] == 0) {
+					map[nx][ny]++;
+					q.add(new int[] {nx,ny,d});
+					answerX = nx;
+					answerY = ny;
+					break;
+				}
+			}
+//			for(int i=0;i<N;i++) {
+//				for(int j=0;j<M;j++) {
+//					System.out.print(map[i][j] + " ");
+//				}
+//				System.out.println();
+//			}
+//			System.out.println("===================");
+		}
+	}
+	public static boolean isIn(int x,int y) {
+		return x>=0 && x<N && y>=0 && y<M;
+	}
 }
