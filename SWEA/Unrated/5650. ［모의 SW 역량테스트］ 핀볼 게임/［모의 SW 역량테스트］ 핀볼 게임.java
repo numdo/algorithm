@@ -8,7 +8,7 @@ public class Solution {
 	static int[] dy = {0,0,-1,1};
 	static int ballX,ballY,ballDir;
 	static int answer;
-    static Map<Integer, List<int[]>> holeMap;
+//    static Map<Integer, List<int[]>> holeMap;
     static boolean[][] visited;
 	public static void main(String[] args) throws Exception{
 		// TODO Auto-generated method stub
@@ -17,17 +17,17 @@ public class Solution {
 		for(int tc=1;tc<=T;tc++) {
 			N = Integer.parseInt(br.readLine().trim());
 			map = new int[N][N];
-			holeMap = new HashMap<>();
+//			holeMap = new HashMap<>();
 			visited = new boolean[N][N];
 			answer = 0;
 			for(int i=0;i<N;i++) {
 				StringTokenizer st = new StringTokenizer(br.readLine().trim());
 				for(int j=0;j<N;j++) {
 					map[i][j] = Integer.parseInt(st.nextToken());
-                    if(map[i][j] >=6 && map[i][j] <=10) {
-                        holeMap.putIfAbsent(map[i][j], new ArrayList<>());
-                        holeMap.get(map[i][j]).add(new int[]{i, j});
-                    }
+//                    if(map[i][j] >=6 && map[i][j] <=10) {
+//                        holeMap.putIfAbsent(map[i][j], new ArrayList<>());
+//                        holeMap.get(map[i][j]).add(new int[]{i, j});
+//                    }
 				}
 			}
 			simulate();
