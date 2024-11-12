@@ -1,119 +1,87 @@
-
 import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N;
-    static int[] population;
-    static List<List<Integer>> adjList;
-    static boolean[] selected;
-    static int minDiff = Integer.MAX_VALUE;
+	static int N,answer = Integer.MAX_VALUE;
+	static int[] score,area;
+	static boolean[] visited;
+	static ArrayList<Integer>[] graph;
+	public static void main(String[] args) throws Exception{
+		// TODO Auto-generated method stub
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		N = Integer.parseInt(br.readLine());
+	
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		score = new int[N+1];
+		for(int i=1;i<=N;i++) {
+			score[i] = Integer.parseInt(st.nextToken());
+		}
+		
+		graph = new ArrayList[N+1];
+		for(int i=1;i<=N;i++) {
+			graph[i] = new ArrayList<>();
+		}
+		
+		for(int i=1;i<=N;i++) {
+			st = new StringTokenizer(br.readLine());
+			int size = Integer.parseInt(st.nextToken());
+			for(int j=0;j<size;j++) {
+				int to = Integer.parseInt(st.nextToken());
+				graph[i].add(to);
+//				graph[to].add(i);
+			}
+		}
+		
+		area = new int[N+1];
+		subset(1);
+		if(answer == Integer.MAX_VALUE) System.out.println("-1");
+        else System.out.println(answer);
+		
+	}
 
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        population = new int[N + 1];
-        adjList = new ArrayList<>();
-        selected = new boolean[N + 1];
-
-        // 인접 리스트 초기화
-        for (int i = 0; i <= N; i++) {
-            adjList.add(new ArrayList<>());
-        }
-
-        // 인구 수 입력
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
-        for (int i = 1; i <= N; i++) {
-            population[i] = Integer.parseInt(st.nextToken());
-        }
-
-        // 인접 구역 정보 입력
-        for (int i = 1; i <= N; i++) {
-            st = new StringTokenizer(br.readLine(), " ");
-            int count = Integer.parseInt(st.nextToken());
-            for (int j = 0; j < count; j++) {
-                int neighbor = Integer.parseInt(st.nextToken());
-                adjList.get(i).add(neighbor);
-                adjList.get(neighbor).add(i); // 양방향 연결
-            }
-        }
-
-        // 조합을 통해 모든 구역을 나눠서 계산
-        for (int i = 1; i <= N / 2; i++) { // 구역 수의 절반까지만 탐색
-            combine(1, 0, i);
-        }
-
-        // 결과 출력
-        System.out.println(minDiff == Integer.MAX_VALUE ? -1 : minDiff);
-    }
-
-    // 조합 생성 함수
-    public static void combine(int index, int count, int target) {
-        if (count == target) {
-            // 두 선거구가 모두 연결되었는지 확인
-            if (isConnected(true) && isConnected(false)) {
-                calculateDifference();
-            }
-            return;
-        }
-
-        for (int i = index; i <= N; i++) {
-            selected[i] = true;
-            combine(i + 1, count + 1, target);
-            selected[i] = false;
-        }
-    }
-
-    // 연결성 확인 함수
-    public static boolean isConnected(boolean flag) {
-        boolean[] visited = new boolean[N + 1];
-        Queue<Integer> queue = new LinkedList<>();
-        
-        // flag가 true이면 선택된 선거구, false이면 선택되지 않은 선거구
-        for (int i = 1; i <= N; i++) {
-            if (selected[i] == flag) {
-                queue.add(i);
-                visited[i] = true;
-                break;
-            }
-        }
-        
-        if (queue.isEmpty()) return false;
-
-        int count = 0;
-        
-        while (!queue.isEmpty()) {
-            int current = queue.poll();
-            count++;
-            
-            for (int neighbor : adjList.get(current)) {
-                if (!visited[neighbor] && selected[neighbor] == flag) {
-                    visited[neighbor] = true;
-                    queue.add(neighbor);
-                }
-            }
-        }
-        
-        for (int i = 1; i <= N; i++) {
-            if (selected[i] == flag && !visited[i]) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-
-    // 인구 차이 계산 함수
-    public static void calculateDifference() {
-        int population1 = 0, population2 = 0;
-        for (int i = 1; i <= N; i++) {
-            if (selected[i]) {
-                population1 += population[i];
-            } else {
-                population2 += population[i];
-            }
-        }
-        int diff = Math.abs(population1 - population2);
-        minDiff = Math.min(minDiff, diff);
-    }
+	public static void subset(int depth) {
+		
+		if(depth == N+1) {
+			int area1 = 0;
+			int area2 = 0;
+			for(int i=1;i<=N;i++) {
+				if(area[i] == 1) {
+					area1+=score[i];
+				}
+				else {
+					area2+=score[i];
+				}
+			}
+			// 연결 되어있는지 확인
+			int link = 0;
+			visited = new boolean[N+1];
+			for(int i=1;i<=N;i++) {
+				if(visited[i]) continue;
+				dfs(i,area[i]);
+				link++;
+			}
+			if(link == 2) {
+				answer = Math.min(Math.abs(area2 - area1),answer);
+			}
+			
+			return;
+		}
+		area[depth] = 1;
+		subset(depth+1);
+		
+		area[depth] = 2;
+		subset(depth+1);
+	}
+	
+	public static void dfs(int depth,int color) {
+		
+		for(int i:graph[depth]) {
+			if(!visited[i] && area[i] == color) {
+				visited[i] = true;
+				dfs(i,area[i]);
+			}
+			
+		}
+	}
 }
