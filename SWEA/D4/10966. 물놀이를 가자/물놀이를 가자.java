@@ -1,15 +1,13 @@
-
 import java.io.*;
 import java.util.*;
 
 public class Solution {
 	static int N, M;
-	static char[][] map;
-	static Queue<int[]> water;
+	static char[][] pool;
+	static Queue<int[]> q;
+	static int[][] result;
 	static int[] dx = { -1, 1, 0, 0 };
 	static int[] dy = { 0, 0, -1, 1 };
-	static boolean[][] visited;
-	static int[][] calMap;
 
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
@@ -19,56 +17,54 @@ public class Solution {
 			StringTokenizer st = new StringTokenizer(br.readLine());
 			N = Integer.parseInt(st.nextToken());
 			M = Integer.parseInt(st.nextToken());
-			map = new char[N][M];
-			calMap = new int[N][M];
-			water = new LinkedList<>();
+			pool = new char[N][M];
+			q = new LinkedList<>();
+			result = new int[N][M];
+			for (int i = 0; i < N; i++) {
+				Arrays.fill(result[i], -1);
+			}
 			for (int i = 0; i < N; i++) {
 				String line = br.readLine();
 				for (int j = 0; j < M; j++) {
-					map[i][j] = line.charAt(j);
-					if (map[i][j] == 'W') {
-						water.add(new int[] { i, j });
-						calMap[i][j] = 0;
-					} else {
-						calMap[i][j] = Integer.MAX_VALUE;
+					pool[i][j] = line.charAt(j);
+					if (pool[i][j] == 'W') {
+						q.add(new int[] { i, j });
+						result[i][j] = 0;
 					}
 				}
 			}
-
-			int sum = 0;
-			bfs(water);
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < M; j++) {
-					if (calMap[i][j] != Integer.MAX_VALUE) {
-						sum += calMap[i][j];
-					}
-				}
-			}
-			System.out.println("#" + tc + " " + sum);
+			int answer = bfs();
+			System.out.println("#" + tc +" " + answer);
 		}
 	}
 
-	// 다시 하자 W인것것들을 리스트에 넣어뒀잖아 그러면 그 리스트만큼 돌려
-	// int 맵을 하나 만들어서 거기에는 거리 값들을 넣어놔
-	// 그래서 bfs를 하면서 최소값이면 갱신 아니면 탈출로 가자
-	// bfs를 하면서
-	private static void bfs(Queue<int[]> q) {
+	private static int bfs() {
+		int count = 1;
 		while (!q.isEmpty()) {
-			int[] temp = q.poll();
-			int x = temp[0];
-			int y = temp[1];
-			for (int d = 0; d < 4; d++) {
-				int cx = x + dx[d];
-				int cy = y + dy[d];
-				if (isMap(cx, cy) && calMap[x][y] +1 < calMap[cx][cy]) {
-					calMap[cx][cy] = calMap[x][y] +1;
-					q.add(new int[] {cx,cy});
+			int size = q.size();
+			for (int i = 0; i < size; i++) {
+				int[] cur = q.poll();
+				for (int d = 0; d < 4; d++) {
+					int nx = cur[0] + dx[d];
+					int ny = cur[1] + dy[d];
+					if (!isIn(nx, ny) || result[nx][ny] != -1)
+						continue;
+					result[nx][ny] = count;
+					q.add(new int[] { nx, ny });
 				}
 			}
+			count++;
 		}
+		int sum = 0;
+		for(int i=0;i<N;i++) {
+			for(int j=0;j<M;j++) {
+				sum+= result[i][j];
+			}
+		}
+		return sum;
 	}
 
-	private static boolean isMap(int x, int y) {
+	public static boolean isIn(int x, int y) {
 		return x >= 0 && x < N && y >= 0 && y < M;
 	}
 }
