@@ -11,6 +11,7 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
 		while (true) {
 			StringTokenizer st = new StringTokenizer(br.readLine());
 			M = Integer.parseInt(st.nextToken());
@@ -35,9 +36,9 @@ public class Main {
 					}
 				}
 			}
-			System.out.println(answer);
+			sb.append(answer).append("\n");
 		}
-
+		System.out.print(sb);
 	}
 
 	public static void bfs(int x, int y) {
