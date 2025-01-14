@@ -1,48 +1,38 @@
 import java.util.*;
 import java.io.*;
+
 public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        // N 입력 및 배열 생성
         int N = Integer.parseInt(br.readLine());
         int[] standard = new int[N];
-
+        
+        // N개의 숫자 입력
         StringTokenizer st = new StringTokenizer(br.readLine());
-        for(int i=0;i<N;i++) {
-            int x = Integer.parseInt(st.nextToken());
-            standard[i] = x;
+        for (int i = 0; i < N; i++) {
+            standard[i] = Integer.parseInt(st.nextToken());
         }
+        
+        // 배열 정렬
         Arrays.sort(standard);
+        
+        // M 입력 및 탐색 수행
         int M = Integer.parseInt(br.readLine());
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         st = new StringTokenizer(br.readLine());
-        for(int i=0;i<M;i++){
+        for (int i = 0; i < M; i++) {
             int x = Integer.parseInt(st.nextToken());
-            boolean target = binarySearch(x,0,N-1,standard);
-            if(target){
+            // Arrays.binarySearch를 사용하여 탐색
+            if (Arrays.binarySearch(standard, x) >= 0) {
                 sb.append(1).append("\n");
             } else {
                 sb.append(0).append("\n");
             }
         }
-        System.out.print(sb.toString());
-
-    }
-    public static boolean binarySearch(int key, int low, int high, int[] array) {
-        int mid = 0;
-
-        if (low <= high) {
-            mid = (low + high) / 2;
-
-            if(key == array[mid]){
-                return true;
-            }
-            else if(key < array[mid]){
-                return binarySearch(key, low, mid-1 ,array);
-            }
-            else {
-                return binarySearch(key, mid+1, high, array);
-            }
-        }
-        return false;
+        
+        // 결과 출력
+        System.out.print(sb);
     }
 }
