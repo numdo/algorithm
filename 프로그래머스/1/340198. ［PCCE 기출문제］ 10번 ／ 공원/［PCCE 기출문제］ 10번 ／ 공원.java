@@ -1,57 +1,44 @@
 import java.io.*;
 import java.util.*;
 class Solution {
-    static int[] di = {0,1,1};
-    static int[] dj = {1,1,0};
+    /**
+     * DP 한 번으로 공원 전체를 훑어
+     *  -1(빈칸)만으로 이뤄진 가장 큰 정사각형 변 길이를 구한다.
+     */
     public int solution(int[] mats, String[][] park) {
-        int answer = -1;
-        int temp = 0;
-        for(int i=0;i<park.length;i++){
-            for(int j=0;j<park[0].length;j++){
-                if(park[i][j].equals("-1")){
-                    int p = bfs(i,j,park);
-                    System.out.println(i+" ,"+j);
-                    System.out.println(p);
-                    System.out.println();
-                    temp = Integer.max(p,temp);
+
+        int n = park.length;          // 행 길이
+        int m = park[0].length;       // 열 길이
+
+        // dp[i][j] = (i,j)가 우하단인 최대 정사각형 한 변 길이
+        int[][] dp = new int[n][m];
+        int maxLen = 0;               // park 전역에서 얻은 최대 변 길이
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+
+                // 사람이 없는 칸("-1")일 때만 값 계산
+                if (park[i][j].equals("-1")) {
+
+                    if (i == 0 || j == 0) {      // 첫 행·첫 열
+                        dp[i][j] = 1;
+                    } else {
+                        // 위·왼쪽·좌상 값 중 최소 + 1
+                        dp[i][j] = Math.min(
+                                        Math.min(dp[i-1][j], dp[i][j-1]),
+                                        dp[i-1][j-1]) + 1;
+                    }
+                    maxLen = Math.max(maxLen, dp[i][j]); // 전역 최대 갱신
                 }
+                // 사람이 앉아 있다면 dp[i][j]는 기본값 0
             }
         }
-        for(int i=0;i<mats.length;i++){
-            if(mats[i] <= temp){
-                answer = Integer.max(mats[i],answer);
-            }
+
+        // 지민이가 가진 돗자리 중 maxLen 이하에서 가장 큰 값 선택
+        int answer = -1;
+        for (int len : mats) {
+            if (len <= maxLen) answer = Math.max(answer, len);
         }
         return answer;
-    }
-    static int bfs(int i, int j, String[][] park){
-        Queue<int[]> q = new LinkedList<>();
-        int[][] visited = new int[park.length][park[0].length];
-        q.add(new int[]{i,j});
-        visited[i][j] = 1;
-        int size = 1;
-        while(!q.isEmpty()){
-            int depth = q.size();
-            for(int k = 0;k<depth;k++){
-                int[] cur = q.poll();
-                for(int d=0;d<3;d++){
-                    int ni = cur[0] + di[d];
-                    int nj = cur[1] + dj[d];
-                    if(isIn(ni,nj,park.length,park[0].length) && park[ni][nj].equals("-1")){
-                        if(visited[ni][nj] == 0) {
-                            visited[ni][nj] = 1;
-                            q.add(new int[]{ni,nj});
-                        }
-                    } else{
-                        return size;
-                    }
-                }
-            }
-            size++;
-        }
-        return size;
-    }
-    static boolean isIn(int i,int j,int iLen,int jLen){
-        return i<iLen && j<jLen;
     }
 }
